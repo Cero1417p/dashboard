@@ -15,7 +15,11 @@ import {
     Typography,
     TypographyProps
 } from "@mui/material"
-import { FC, FormEvent } from "react"
+import { FC, useEffect } from "react"
+import * as Yup from "yup"
+import { useFormik } from "formik"
+import { useAuth } from "../contexts/AuthProvider"
+import { useNavigate } from "react-router-dom"
 
 interface CopyrightProps extends TypographyProps {
     website?: string
@@ -33,16 +37,37 @@ const Copyright: FC<CopyrightProps> = ({ website = "#", ...typographyProps }) =>
     )
 }
 const defaultTheme = createTheme()
+const validationSchema = Yup.object({
+    email: Yup.string()
+        .email("Ingrese un correo electrónico válido")
+        .required("El correo electrónico es requerido"),
+    password: Yup.string().required("La contraseña es requerida")
+})
 const LoginPage = () => {
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        const data = new FormData(event.currentTarget)
-        console.log({
-            email: data.get("email"),
-            password: data.get("password")
-        })
-    }
+    const { user, signInWithEmail } = useAuth()
+    const navigate = useNavigate()
 
+    const formik = useFormik({
+        initialValues: {
+            email: "",
+            password: ""
+        },
+        validationSchema,
+        onSubmit: (values) => {
+            //
+            void signInWithEmail(values.email, values.password)
+        }
+    })
+
+    useEffect(() => {
+        console.log("cambio user:", user)
+    }, [user])
+    useEffect(() => {
+        if (user) {
+            navigate("/")
+        }
+        console.log("called")
+    }, [navigate])
     return (
         <ThemeProvider theme={defaultTheme}>
             <Container component="main" maxWidth="xs">
@@ -61,7 +86,7 @@ const LoginPage = () => {
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    <Box component="form" onSubmit={formik.handleSubmit} noValidate sx={{ mt: 1 }}>
                         <TextField
                             margin="normal"
                             required
@@ -71,6 +96,11 @@ const LoginPage = () => {
                             name="email"
                             autoComplete="email"
                             autoFocus
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.email && Boolean(formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
                         />
                         <TextField
                             margin="normal"
@@ -81,6 +111,11 @@ const LoginPage = () => {
                             type="password"
                             id="password"
                             autoComplete="current-password"
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.password && Boolean(formik.errors.password)}
+                            helperText={formik.touched.password && formik.errors.password}
                         />
                         <FormControlLabel
                             control={<Checkbox value="remember" color="primary" />}
@@ -105,6 +140,7 @@ const LoginPage = () => {
                 </Box>
                 <Copyright sx={{ mt: 8, mb: 4 }} />
             </Container>
+            <pre>{JSON.stringify(user, null, 2)}</pre>
         </ThemeProvider>
     )
 }
