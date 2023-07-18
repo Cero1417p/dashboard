@@ -2,19 +2,25 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 import { supabase } from "../supabase/client"
 import { User } from "@supabase/supabase-js"
 
-interface Context {
+interface IMetadata {
+    firstName: string
+    lastName: string
+}
+interface IContext {
     loading: boolean
     user: User | undefined | null
-    signInWithEmail: (email: string, password: string) => Promise<void>
-    signOut: () => Promise<void>
+    signInWithEmail: ((email: string, password: string) => Promise<void>) | null
+    signOut: (() => Promise<void>) | null
+    signUp: ((email: string, password: string, metadata: IMetadata) => Promise<void>) | null
 }
-const defaultContext: Context = {
+const defaultContext: IContext = {
     loading: false,
     user: null,
-    signInWithEmail: async (email: string, password: string): Promise<void> => {},
-    signOut: async (): Promise<void> => {}
+    signInWithEmail: null,
+    signOut: null,
+    signUp: null
 }
-export const AuthContext = createContext<Context>(defaultContext)
+export const AuthContext = createContext<IContext>(defaultContext)
 export const useAuth = () => {
     const context = useContext(AuthContext)
     if (context === undefined) {
@@ -44,13 +50,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }
     const signOut = async () => {
+        setLoading(true)
         try {
             const { error } = await supabase.auth.signOut()
             if (error) {
                 throw error
             }
             setUser(null)
-            alert("SALIO de cuenta")
+            alert("SALIO DE SU CUENTA")
+        } catch (error) {
+            alert((error as Error).message)
+        } finally {
+            setLoading(false)
+        }
+    }
+    const signUp = async (email: string, password: string, metadata: IMetadata) => {
+        setLoading(true)
+        try {
+            const { error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: { data: metadata }
+            })
+            if (error) {
+                throw error
+            }
+            alert(`Usuario creado correctamente`)
         } catch (error) {
             alert((error as Error).message)
         } finally {
@@ -61,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const { data } = supabase.auth.onAuthStateChange((event, session) => {
             console.log("session: ", session)
             console.log("event: ", event)
-            if (event === "INITIAL_SESSION") {
+            if (event === "INITIAL_SESSION" || event === "SIGNED_IN") {
                 setUser(session?.user)
             }
         })
@@ -70,7 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [])
     return (
-        <AuthContext.Provider value={{ user, loading, signInWithEmail, signOut }}>
+        <AuthContext.Provider value={{ user, loading, signInWithEmail, signOut, signUp }}>
             {children}
         </AuthContext.Provider>
     )

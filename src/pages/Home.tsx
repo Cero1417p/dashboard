@@ -1,20 +1,28 @@
-import { Link } from "react-router-dom"
 import { useAuth } from "../contexts/AuthProvider"
-import { Button } from "@mui/material"
-import { useEffect } from "react"
+import { Button, Stack, Typography } from "@mui/material"
+import { Link } from "react-router-dom"
 
 const Home = () => {
     const context = useAuth()
-    const { user, signOut } = context
+    const { user, loading, signOut } = context
 
-    useEffect(() => {
-        console.log("cambio user:", user)
-    }, [user])
     return (
         <>
-            ruta / <Link to="login">login</Link>
+            <Stack direction="row" justifyContent="space-around" alignItems="center" spacing={2}>
+                <Typography variant="h6">Home</Typography>
+                <Link to="manage-user">Gestión Usuarios</Link>
+                <Button
+                    disabled={loading}
+                    variant="contained"
+                    onClick={() => {
+                        signOut && void signOut()
+                    }}
+                >
+                    {loading ? "Loading..." : "SALIR"}
+                </Button>
+            </Stack>
             <hr></hr>
-            <Button onClick={() => void signOut()}> Logout </Button>
+            <Typography variant="subtitle2">Current User</Typography>
             <pre>{JSON.stringify(user, null, 2)}</pre>
         </>
     )

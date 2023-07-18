@@ -3,39 +3,22 @@ import {
     Avatar,
     Box,
     Button,
-    Checkbox,
     Container,
     createTheme,
     CssBaseline,
-    FormControlLabel,
     Grid,
     Link,
     TextField,
     ThemeProvider,
-    Typography,
-    TypographyProps
+    Typography
 } from "@mui/material"
-import { FC, useEffect } from "react"
+import { useEffect } from "react"
 import * as Yup from "yup"
 import { useFormik } from "formik"
 import { useAuth } from "../contexts/AuthProvider"
 import { useNavigate } from "react-router-dom"
+import Copyright from "../components/Copyright/Copyright"
 
-interface CopyrightProps extends TypographyProps {
-    website?: string
-}
-const Copyright: FC<CopyrightProps> = ({ website = "#", ...typographyProps }) => {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...typographyProps}>
-            {"Copyright © "}
-            <Link color="inherit" href={website}>
-                Your Website
-            </Link>
-            {new Date().getFullYear()}
-            {"."}
-        </Typography>
-    )
-}
 const defaultTheme = createTheme()
 const validationSchema = Yup.object({
     email: Yup.string()
@@ -43,8 +26,8 @@ const validationSchema = Yup.object({
         .required("El correo electrónico es requerido"),
     password: Yup.string().required("La contraseña es requerida")
 })
-const LoginPage = () => {
-    const { user, signInWithEmail } = useAuth()
+const Login = () => {
+    const { user, loading, signInWithEmail } = useAuth()
     const navigate = useNavigate()
 
     const formik = useFormik({
@@ -55,19 +38,16 @@ const LoginPage = () => {
         validationSchema,
         onSubmit: (values) => {
             //
-            void signInWithEmail(values.email, values.password)
+            signInWithEmail && void signInWithEmail(values.email, values.password)
         }
     })
 
-    useEffect(() => {
-        console.log("cambio user:", user)
-    }, [user])
     useEffect(() => {
         if (user) {
             navigate("/")
         }
         console.log("called")
-    }, [navigate])
+    }, [user])
     return (
         <ThemeProvider theme={defaultTheme}>
             <Container component="main" maxWidth="xs">
@@ -84,7 +64,7 @@ const LoginPage = () => {
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Sign in
+                        Ingreso
                     </Typography>
                     <Box component="form" onSubmit={formik.handleSubmit} noValidate sx={{ mt: 1 }}>
                         <TextField
@@ -92,7 +72,7 @@ const LoginPage = () => {
                             required
                             fullWidth
                             id="email"
-                            label="Email Address"
+                            label="Usuario"
                             name="email"
                             autoComplete="email"
                             autoFocus
@@ -117,31 +97,29 @@ const LoginPage = () => {
                             error={formik.touched.password && Boolean(formik.errors.password)}
                             helperText={formik.touched.password && formik.errors.password}
                         />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
-                        />
-                        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                            Sign In
+
+                        <Button
+                            disabled={loading}
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            {loading ? "Loading..." : "Login"}
                         </Button>
                         <Grid container>
                             <Grid item xs>
                                 <Link href="#" variant="body2">
-                                    Forgot password?
+                                    Olvide mi contraseña
                                 </Link>
                             </Grid>
-                            <Grid item>
-                                <Link href="#" variant="body2">
-                                    {"Don't have an account? Sign Up"}
-                                </Link>
-                            </Grid>
+                            <Grid item></Grid>
                         </Grid>
                     </Box>
                 </Box>
                 <Copyright sx={{ mt: 8, mb: 4 }} />
             </Container>
-            <pre>{JSON.stringify(user, null, 2)}</pre>
         </ThemeProvider>
     )
 }
-export default LoginPage
+export default Login

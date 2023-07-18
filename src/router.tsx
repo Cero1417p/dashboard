@@ -3,6 +3,8 @@ import { RouteObject } from "react-router"
 import SuspenseLoader from "./components/SuspenseLoader"
 import Home from "./pages/Home"
 import AuthRoute from "./navigation/AuthRoute"
+import Register from "./pages/Register"
+import UserManagement from "./pages/UserManagement"
 
 interface LoaderProps {
     [key: string]: any
@@ -16,7 +18,7 @@ const Loader =
         </Suspense>
     )
 
-const LoginPage = Loader(lazy(() => import("./pages/LoginPage")))
+const LoginPage = Loader(lazy(() => import("./pages/Login")))
 
 const routes: RouteObject[] = [
     {
@@ -30,12 +32,17 @@ const routes: RouteObject[] = [
             {
                 path: "/home",
                 element: <h1>HOME</h1>
+            },
+            {
+                path: "manage-user",
+                element: <UserManagement />
             }
         ]
     },
     {
         path: "login",
         element: <LoginPage />
-    }
+    },
+    { path: "register", element: <Register /> }
 ]
 export default routes
