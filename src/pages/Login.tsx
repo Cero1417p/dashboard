@@ -29,6 +29,7 @@ const validationSchema = Yup.object({
 const Login = () => {
     const { user, loading, signInWithEmail } = useAuth()
     const navigate = useNavigate()
+    const lastPath = window.localStorage.getItem("last-path") || "/"
 
     const formik = useFormik({
         initialValues: {
@@ -44,7 +45,7 @@ const Login = () => {
 
     useEffect(() => {
         if (user) {
-            navigate("/")
+            navigate(lastPath)
         }
         console.log("called")
     }, [user])

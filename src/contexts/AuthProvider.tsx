@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import { supabase } from "../supabase/client"
 import { User } from "@supabase/supabase-js"
-
+import Swal from "sweetalert2"
 interface IMetadata {
     firstName: string
     lastName: string
@@ -42,9 +42,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (error) {
                 throw error
             }
-            alert("INGRESO CORRECTO: ")
+            void Swal.fire({
+                icon: "success",
+                title: "Ingreso correcto",
+                timer: 2000
+            })
         } catch (error) {
-            alert((error as Error).message)
+            void Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: (error as Error).message
+            })
+            //alert((error as Error).message)
         } finally {
             setLoading(false)
         }
@@ -57,9 +66,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 throw error
             }
             setUser(null)
-            alert("SALIO DE SU CUENTA")
+            void Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Salio de su cuenta",
+                showConfirmButton: false,
+                timer: 1500
+            })
+            //alert("SALIO DE SU CUENTA")
         } catch (error) {
-            alert((error as Error).message)
+            void Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: (error as Error).message,
+                showConfirmButton: false,
+                timer: 1500
+            })
+            //alert((error as Error).message)
         } finally {
             setLoading(false)
         }
@@ -75,9 +98,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (error) {
                 throw error
             }
-            alert(`Usuario creado correctamente`)
+            void Swal.fire({
+                icon: "success",
+                title: "Usuario creado correctamente",
+                timer: 2000
+            })
+            //alert(`Usuario creado correctamente`)
         } catch (error) {
-            alert((error as Error).message)
+            void Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: (error as Error).message
+            })
+            //alert((error as Error).message)
         } finally {
             setLoading(false)
         }

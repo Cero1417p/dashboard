@@ -6,6 +6,7 @@ import AuthRoute from "./navigation/AuthRoute"
 import Register from "./pages/Register"
 import UserManagement from "./pages/userManagement/UserManagement"
 import ProductManagement from "./pages/productManagement/ProductManagement"
+import ProductDetail from "./pages/productManagement/ProductDetail"
 
 interface LoaderProps {
     [key: string]: any
@@ -31,7 +32,7 @@ const routes: RouteObject[] = [
                 element: <Home />
             },
             {
-                path: "/home",
+                path: "home",
                 element: <h1>HOME</h1>
             },
             {
@@ -39,8 +40,12 @@ const routes: RouteObject[] = [
                 element: <UserManagement />
             },
             {
-                path: "manage-product",
+                path: "manage-product/",
                 element: <ProductManagement />
+            },
+            {
+                path: "manage-product/:id",
+                element: <ProductDetail />
             }
         ]
     },
