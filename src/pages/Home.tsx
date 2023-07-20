@@ -11,6 +11,7 @@ const Home = () => {
             <Stack direction="row" justifyContent="space-around" alignItems="center" spacing={2}>
                 <Typography variant="h6">Home</Typography>
                 <Link to="manage-user">Gestión Usuarios</Link>
+                <Link to="manage-product">Gestión Productos</Link>
                 <Button
                     disabled={loading}
                     variant="contained"

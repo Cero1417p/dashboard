@@ -1,9 +1,9 @@
-import { supabase } from "../supabase/client"
+import { supabase } from "../../supabase/client"
 import { useEffect, useState } from "react"
 import { Typography } from "@mui/material"
 
 const UserManagement = () => {
-    const [users, setUsers] = useState([])
+    const [users, setUsers] = useState<any[]|[]>([])
     const fetchTodos = async () => {
         const { data, error } = await supabase
             .from("users")

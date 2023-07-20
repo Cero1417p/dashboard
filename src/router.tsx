@@ -4,7 +4,8 @@ import SuspenseLoader from "./components/SuspenseLoader"
 import Home from "./pages/Home"
 import AuthRoute from "./navigation/AuthRoute"
 import Register from "./pages/Register"
-import UserManagement from "./pages/UserManagement"
+import UserManagement from "./pages/userManagement/UserManagement"
+import ProductManagement from "./pages/productManagement/ProductManagement"
 
 interface LoaderProps {
     [key: string]: any
@@ -36,6 +37,10 @@ const routes: RouteObject[] = [
             {
                 path: "manage-user",
                 element: <UserManagement />
+            },
+            {
+                path: "manage-product",
+                element: <ProductManagement />
             }
         ]
     },
