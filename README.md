@@ -6,6 +6,13 @@ Dashboard React typescript and Supabase
 
 Refer supabase auth info https://github.com/FaztWeb/react-supabase-auth-crud/blob/master/src/App.jsx
 
+RLS based on role 
+```postgresql
+((( SELECT users.role
+   FROM users
+  WHERE (users.id = auth.uid())))::text = 'admin'::text)
+```
+
 CRUD on supbase js client
 ```js
 const { data, error } = await supabase
