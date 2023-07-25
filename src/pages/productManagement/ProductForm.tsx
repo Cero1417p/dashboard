@@ -1,4 +1,4 @@
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import {
     Avatar,
     Box,
@@ -17,7 +17,9 @@ import { useNavigate, useParams } from "react-router-dom"
 import { supabase } from "../../supabase/client"
 import { useEffect, useState } from "react"
 import SuspenseLoader from "../../components/SuspenseLoader"
-interface IA {
+import Swal from 'sweetalert2'
+
+interface Item {
     id: number
     created_at: string
     name: string
@@ -28,14 +30,13 @@ const validationSchema = Yup.object({
         .max(30, "El nombre no debe ser mayor a 30 caracteres")
         .required("nombre es requerido")
 })
-const ProductDetail = () => {
+const ProductForm = () => {
     const navigate = useNavigate()
-    const params = useParams()
-    const [item, setItem] = useState<IA>()
+    const {id} = useParams()
+    const [item, setItem] = useState<Item|undefined>()
     const [loading, setLoading] = useState(true)
     // get by id
-
-    let title = "Registro de Producto"
+    const [title,setTitle]=useState("Crear Nuevo")
 
     const formik = useFormik({
         initialValues: {
@@ -44,8 +45,11 @@ const ProductDetail = () => {
         enableReinitialize: true,
         validationSchema,
         onSubmit: (values) => {
-            //
+            //  :action
+            //  CREAR / EDITAR
+
             console.log("values: ", values)
+            void editProduct(values.name)
             //signInWithEmail && void signInWithEmail(values.email, values.password)
         }
     })
@@ -55,17 +59,50 @@ const ProductDetail = () => {
         const { data, error } = await supabase
             .from("products")
             .select("*")
-            .eq("id", params.id)
+            .eq("id", id)
             .single()
         if (error) {
             console.error("error", error)
-            navigate("/manage-product")
-        } else setItem(data as IA)
+            navigate("/product")
+        } else setItem(data as Item)
         console.log("data: ", data)
         setLoading(false)
     }
+    const editProduct = async (name:string) => {
+        setLoading(true)
+        const {  error } =  await supabase
+        .from('products')
+        .upsert({ id, name })
+        .select()
+        if (error) {
+            console.error("error", error)
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: "Error",
+                text:error.message,
+                showConfirmButton: false,
+                timer: 1500
+              })
+        }
+        setLoading(false)
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Producto editado correctamente',
+            showConfirmButton: false,
+            timer: 1500
+          })
+        navigate("/product")
+    }
     useEffect(() => {
-        void fetchProduct()
+        if( id === "new"){
+            setItem(undefined)
+            setLoading(false)
+        }else{
+            setTitle("Editar Producto")
+            void fetchProduct()
+        }
     }, [])
 
     if (loading) return <SuspenseLoader />
@@ -83,7 +120,7 @@ const ProductDetail = () => {
                     }}
                 >
                     <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-                        <LockOutlinedIcon />
+                        <Inventory2OutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         {title}
@@ -142,4 +179,4 @@ const ProductDetail = () => {
         </ThemeProvider>
     )
 }
-export default ProductDetail
+export default ProductForm
