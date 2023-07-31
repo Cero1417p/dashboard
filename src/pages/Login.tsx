@@ -91,7 +91,7 @@ const Login = () => {
                             label="Password"
                             type="password"
                             id="password"
-                            autoComplete="current-password"
+                            autoComplete="password"
                             value={formik.values.password}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}

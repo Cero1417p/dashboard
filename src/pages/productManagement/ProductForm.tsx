@@ -1,4 +1,4 @@
-import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined"
 import {
     Avatar,
     Box,
@@ -17,7 +17,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { supabase } from "../../supabase/client"
 import { useEffect, useState } from "react"
 import SuspenseLoader from "../../components/SuspenseLoader"
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2"
 
 interface Item {
     id: number
@@ -32,11 +32,11 @@ const validationSchema = Yup.object({
 })
 const ProductForm = () => {
     const navigate = useNavigate()
-    const {id} = useParams()
-    const [item, setItem] = useState<Item|undefined>()
+    const { id } = useParams()
+    const [item, setItem] = useState<Item | undefined>()
     const [loading, setLoading] = useState(true)
     // get by id
-    const [title,setTitle]=useState("Crear Nuevo")
+    const [title, setTitle] = useState("Crear Nuevo")
 
     const formik = useFormik({
         initialValues: {
@@ -56,11 +56,7 @@ const ProductForm = () => {
 
     const fetchProduct = async () => {
         setLoading(true)
-        const { data, error } = await supabase
-            .from("products")
-            .select("*")
-            .eq("id", id)
-            .single()
+        const { data, error } = await supabase.from("products").select("*").eq("id", id).single()
         if (error) {
             console.error("error", error)
             navigate("/product")
@@ -68,38 +64,35 @@ const ProductForm = () => {
         console.log("data: ", data)
         setLoading(false)
     }
-    const editProduct = async (name:string) => {
+    const editProduct = async (name: string) => {
         setLoading(true)
-        const {  error } =  await supabase
-        .from('products')
-        .upsert({ id, name })
-        .select()
+        const { error } = await supabase.from("products").upsert({ id, name }).select()
         if (error) {
             console.error("error", error)
-            Swal.fire({
-                position: 'top-end',
-                icon: 'error',
+            void Swal.fire({
+                position: "top-end",
+                icon: "error",
                 title: "Error",
-                text:error.message,
+                text: error.message,
                 showConfirmButton: false,
                 timer: 1500
-              })
+            })
         }
         setLoading(false)
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: 'Producto editado correctamente',
+        void Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Producto editado correctamente",
             showConfirmButton: false,
             timer: 1500
-          })
+        })
         navigate("/product")
     }
     useEffect(() => {
-        if( id === "new"){
+        if (id === "new") {
             setItem(undefined)
             setLoading(false)
-        }else{
+        } else {
             setTitle("Editar Producto")
             void fetchProduct()
         }

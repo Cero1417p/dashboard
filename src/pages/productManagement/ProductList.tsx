@@ -6,6 +6,7 @@ import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined
 import { IconButton, Typography } from "@mui/material"
 import SuspenseLoader from "../../components/SuspenseLoader"
 import { useNavigate } from "react-router-dom"
+import Swal from "sweetalert2"
 
 const ProductList = () => {
     const navigate = useNavigate()
@@ -31,6 +32,7 @@ const ProductList = () => {
             ),
             action: (a: any) => {
                 console.log("when delete validate yes/no: ", a)
+                void deleteProduct(a.id)
             }
         }
     ]
@@ -47,6 +49,38 @@ const ProductList = () => {
     useEffect(() => {
         void fetchProducts()
     }, [])
+
+    const deleteProduct = async (id: string) => {
+        setLoading(false)
+        const { count, statusText, data, status, error } = await supabase
+            .from("products")
+            .delete()
+            .eq("id", id)
+        console.log("status: ", status)
+        console.log("statusText: ", statusText)
+        console.log("count: ", count)
+        console.log("data: ", data)
+        if (status === 204) {
+            void Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Producto eliminado correctamente",
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
+        if (error) {
+            void Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Error",
+                text: error.message,
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
+        void fetchProducts()
+    }
 
     if (loading === false) return <SuspenseLoader />
 

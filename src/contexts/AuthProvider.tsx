@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 timer: 2000
             })
         } catch (error) {
+            console.log("ERROR: ", error)
             void Swal.fire({
                 icon: "error",
                 title: "Oops...",
