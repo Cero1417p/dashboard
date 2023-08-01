@@ -21,7 +21,7 @@ const ProductList = () => {
             ),
             action: (a: any) => {
                 console.log("when edit redirect to /manage-product/:id : ", a)
-                navigate("/product/" + a.id)
+                navigate("/product/" + a.id + "/edit")
             }
         },
         {

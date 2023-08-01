@@ -40,13 +40,22 @@ const routes: RouteObject[] = [
                 element: <UserManagement />
             },
             {
-                path: "product/",
-                element: <ProductManagement />
-            },
-            {
-                // product/:id/:action
-                path: "product/:id",
-                element: <ProductForm />
+                path: "product",
+                children: [
+                    { path: "/product", element: <ProductManagement /> },
+                    {
+                        path: ":id/detail",
+                        element: <ProductForm action="DETAIL" />
+                    },
+                    {
+                        path: ":id/edit",
+                        element: <ProductForm action="EDIT" />
+                    },
+                    {
+                        path: "new",
+                        element: <ProductForm action="CREATE" />
+                    }
+                ]
             }
         ]
     },

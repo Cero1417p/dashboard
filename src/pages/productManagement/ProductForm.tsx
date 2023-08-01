@@ -30,13 +30,11 @@ const validationSchema = Yup.object({
         .max(30, "El nombre no debe ser mayor a 30 caracteres")
         .required("nombre es requerido")
 })
-const ProductForm = () => {
+const ProductForm = ({ action }: { action: "EDIT" | "CREATE" | "DETAIL" }) => {
     const navigate = useNavigate()
     const { id } = useParams()
     const [item, setItem] = useState<Item | undefined>()
     const [loading, setLoading] = useState(true)
-    // get by id
-    const [title, setTitle] = useState("Crear Nuevo")
 
     const formik = useFormik({
         initialValues: {
@@ -45,12 +43,8 @@ const ProductForm = () => {
         enableReinitialize: true,
         validationSchema,
         onSubmit: (values) => {
-            //  :action
-            //  CREAR / EDITAR
-
             console.log("values: ", values)
             void editProduct(values.name)
-            //signInWithEmail && void signInWithEmail(values.email, values.password)
         }
     })
 
@@ -58,10 +52,16 @@ const ProductForm = () => {
         setLoading(true)
         const { data, error } = await supabase.from("products").select("*").eq("id", id).single()
         if (error) {
-            console.error("error", error)
+            void Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Error",
+                text: error.message,
+                showConfirmButton: false,
+                timer: 1500
+            })
             navigate("/product")
         } else setItem(data as Item)
-        console.log("data: ", data)
         setLoading(false)
     }
     const editProduct = async (name: string) => {
@@ -89,14 +89,14 @@ const ProductForm = () => {
         navigate("/product")
     }
     useEffect(() => {
-        if (id === "new") {
-            setItem(undefined)
-            setLoading(false)
-        } else {
-            setTitle("Editar Producto")
+        console.log("id: ", id)
+        console.log("action: ", action)
+        if (id !== undefined || action !== "CREATE") {
             void fetchProduct()
+        } else {
+            setLoading(false)
         }
-    }, [])
+    }, [id])
 
     if (loading) return <SuspenseLoader />
 
@@ -116,7 +116,7 @@ const ProductForm = () => {
                         <Inventory2OutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        {title}
+                        {action}
                     </Typography>
                     <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
@@ -164,7 +164,7 @@ const ProductForm = () => {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            {loading ? "Cargando..." : "Editar"}
+                            {loading ? "Cargando..." : action}
                         </Button>
                     </Box>
                 </Box>
