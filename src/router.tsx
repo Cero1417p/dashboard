@@ -7,6 +7,7 @@ import Register from "./pages/Register"
 import UserManagement from "./pages/userManagement/UserManagement"
 import ProductManagement from "./pages/productManagement/ProductManagement"
 import ProductForm from "./pages/productManagement/ProductForm"
+import ProductLayout from "./pages/productManagement/ProductLayout"
 
 interface LoaderProps {
     [key: string]: any
@@ -41,6 +42,7 @@ const routes: RouteObject[] = [
             },
             {
                 path: "product",
+                element: <ProductLayout />,
                 children: [
                     { path: "/product", element: <ProductManagement /> },
                     {

@@ -23,8 +23,10 @@ const Home = () => {
                 </Button>
             </Stack>
             <hr></hr>
-            <Typography variant="subtitle2">Current User</Typography>
-            <pre>{JSON.stringify(user, null, 2)}</pre>
+            <Typography variant="subtitle1">Current User</Typography>
+            <Typography variant="subtitle2">
+                <pre>{JSON.stringify(user, null, 2)}</pre>
+            </Typography>
         </>
     )
 }

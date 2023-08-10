@@ -5,7 +5,6 @@ import {
     Button,
     Container,
     createTheme,
-    CssBaseline,
     Grid,
     TextField,
     ThemeProvider,
@@ -31,6 +30,7 @@ const validationSchema = Yup.object({
         .required("nombre es requerido")
 })
 const ProductForm = ({ action }: { action: "EDIT" | "CREATE" | "DETAIL" }) => {
+    const titleAction = action === "EDIT" ? "Editar" : action === "CREATE" ? "Crear" : "Detalle"
     const navigate = useNavigate()
     const { id } = useParams()
     const [item, setItem] = useState<Item | undefined>()
@@ -44,7 +44,7 @@ const ProductForm = ({ action }: { action: "EDIT" | "CREATE" | "DETAIL" }) => {
         validationSchema,
         onSubmit: (values) => {
             console.log("values: ", values)
-            void editProduct(values.name)
+            void actionProduct(values.name)
         }
     })
 
@@ -64,7 +64,7 @@ const ProductForm = ({ action }: { action: "EDIT" | "CREATE" | "DETAIL" }) => {
         } else setItem(data as Item)
         setLoading(false)
     }
-    const editProduct = async (name: string) => {
+    const actionProduct = async (name: string) => {
         setLoading(true)
         const { error } = await supabase.from("products").upsert({ id, name }).select()
         if (error) {
@@ -82,7 +82,10 @@ const ProductForm = ({ action }: { action: "EDIT" | "CREATE" | "DETAIL" }) => {
         void Swal.fire({
             position: "top-end",
             icon: "success",
-            title: "Producto editado correctamente",
+            title:
+                action === "CREATE"
+                    ? "Producto creado correctamente"
+                    : "Producto editado correctamente",
             showConfirmButton: false,
             timer: 1500
         })
@@ -103,7 +106,6 @@ const ProductForm = ({ action }: { action: "EDIT" | "CREATE" | "DETAIL" }) => {
     return (
         <ThemeProvider theme={defaultTheme}>
             <Container component="main" maxWidth="xs">
-                <CssBaseline />
                 <Box
                     sx={{
                         marginTop: 8,
@@ -116,7 +118,7 @@ const ProductForm = ({ action }: { action: "EDIT" | "CREATE" | "DETAIL" }) => {
                         <Inventory2OutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        {action}
+                        {titleAction}
                     </Typography>
                     <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
@@ -142,6 +144,7 @@ const ProductForm = ({ action }: { action: "EDIT" | "CREATE" | "DETAIL" }) => {
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
+                                    disabled={action === "DETAIL"}
                                     autoComplete="given-name"
                                     name="name"
                                     required
@@ -157,15 +160,17 @@ const ProductForm = ({ action }: { action: "EDIT" | "CREATE" | "DETAIL" }) => {
                                 />
                             </Grid>
                         </Grid>
-                        <Button
-                            disabled={loading}
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            {loading ? "Cargando..." : action}
-                        </Button>
+                        {action !== "DETAIL" && (
+                            <Button
+                                disabled={loading}
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                sx={{ mt: 3, mb: 2 }}
+                            >
+                                {loading ? "Cargando..." : titleAction}
+                            </Button>
+                        )}
                     </Box>
                 </Box>
             </Container>

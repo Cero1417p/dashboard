@@ -3,6 +3,7 @@ import { supabase } from "../../supabase/client"
 import BasicTable from "../../components/Table/BasicTable"
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined"
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined"
+import VisibilityIcon from "@mui/icons-material/Visibility"
 import { IconButton, Typography } from "@mui/material"
 import SuspenseLoader from "../../components/SuspenseLoader"
 import { useNavigate } from "react-router-dom"
@@ -20,8 +21,17 @@ const ProductList = () => {
                 </IconButton>
             ),
             action: (a: any) => {
-                console.log("when edit redirect to /manage-product/:id : ", a)
                 navigate("/product/" + a.id + "/edit")
+            }
+        },
+        {
+            item: (
+                <IconButton aria-label="detail" color="secondary">
+                    <VisibilityIcon />
+                </IconButton>
+            ),
+            action: (a: any) => {
+                navigate("/product/" + a.id + "/detail")
             }
         },
         {
@@ -31,7 +41,6 @@ const ProductList = () => {
                 </IconButton>
             ),
             action: (a: any) => {
-                console.log("when delete validate yes/no: ", a)
                 void deleteProduct(a.id)
             }
         }
